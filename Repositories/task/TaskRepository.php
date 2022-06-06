@@ -17,20 +17,24 @@ class TaskRepository
         $this->db = DBConnector::create();
     }
 
-    public function insert(TaskDTO $taskDTO): string
+    public function insert(TaskDTO $taskDTO,$parent): string
     {
+        $getParentId = 'getParentId';
+        if ($parent == 'goal_id'){
+            $getParentId = 'getGoalID';
+        }
+
         try {
             $this->db->query(
                 "INSERT INTO tasks
-                    (task_title,task_description,due_date,parent_id,goal_id,user_id)
+                    (task_title,task_description,due_date,$parent,user_id)
                         VALUES
-                    (:title,:description,:due_date,:parent_id,:goal_id,:user_id)"
+                    (:title,:description,:due_date,:$parent,:user_id)"
             )->execute(array(
                 ":title" => $taskDTO->getTaskTitle(),
                 ":description" => $taskDTO->getTaskDescription(),
                 ":due_date" => $taskDTO->getDueDate(),
-                ":parent_id" => $taskDTO->getParentId() == 0 ? NULL : $taskDTO->getParentId(),
-                ":goal_id" => $taskDTO->getGoalID() == 0 ? NULL : $taskDTO->getGoalID(),
+                $parent => $taskDTO->$getParentId(),
                 ":user_id" => $taskDTO->getUserID()
             ));
             return "Successfully Created! TASK TITLE: ". $taskDTO->getTaskTitle();
@@ -39,22 +43,27 @@ class TaskRepository
         }
     }
 
-    public function getAllFromGoalId($goalId): array|\Generator
+    public function getAll($parentType,$parentId): array|\Generator
     {
+        $parent = 'parent_id';
+        if ($parentType == 'goal_id'){
+            $parent = 'goal_id';
+        }
         try {
             return $this->db->query(
-                "SELECT task_id AS taskID, 
+                "SELECT 
+                    task_id AS taskId, 
                     task_title AS taskTitle,
                     task_description AS taskDescription,
                     due_date AS dueDate,
                     progress,
                     completed, 
-                    goal_id,
+                    $parent,
                     user_id
                     FROM tasks
-                    WHERE goal_id = :goal_id"
+                    WHERE $parent = :$parent"
             )->execute(array(
-                ":goal_id" => $goalId
+                ":$parent" => $parentId
             ))
                 ->fetch(TaskDTO::class);
 
@@ -63,27 +72,4 @@ class TaskRepository
         }
     }
 
-    public function getAllWithParentTaskId($parentTaskId): array|\Generator
-    {
-        try {
-            return $this->db->query(
-                "SELECT task_id AS taskID, 
-                    task_title AS taskTitle,
-                    task_description AS taskDescription,
-                    due_date AS dueDate,
-                    progress,
-                    completed, 
-                    parent_id,
-                    user_id
-                    FROM tasks
-                    WHERE parent_id = :parent_id"
-            )->execute(array(
-                ":parent_id" => $parentTaskId
-            ))
-                ->fetch(TaskDTO::class);
-
-        }catch (PDOException $exception){
-            return ["message" => $exception->getMessage()];
-        }
-    }
 }

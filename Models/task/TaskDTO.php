@@ -8,19 +8,17 @@ class TaskDTO
     private string $taskTitle;
     private string $taskDescription;
     private string $dueDate;
-    private $parent_id;
-    private $goal_id;
+    private $parent_id = null;
+    private $goal_id = null;
     private int $user_id = 0;
 
     public static function create($task_title,$task_description,$due_date,
-                                  $user_id, $paren_id = null, $goal_id = null): TaskDTO
+                                  $user_id): TaskDTO
     {
         return (new TaskDTO())
             ->setTaskTitle($task_title)
             ->setTaskDescription($task_description)
             ->setDueDate($due_date)
-            ->setParentId($paren_id)
-            ->setGoalId($goal_id)
             ->setUserId($user_id);
     }
 
@@ -74,25 +72,19 @@ class TaskDTO
 
     /**
      * @param int $parent_id
-     * @return TaskDTO
      */
-    public function setParentId(int $parent_id): TaskDTO
+    public function setParentId(int $parent_id)
     {
         $this->parent_id = $parent_id;
-        return $this;
     }
 
     /**
      * @param int $goal_id
-     * @return TaskDTO
      */
-    public function setGoalId(int $goal_id): TaskDTO
+    public function setGoalId(int $goal_id)
     {
         $this->goal_id = $goal_id;
-        return $this;
     }
-
-
 
     /**
      * @return int
