@@ -9,7 +9,7 @@ class DBConnector
 
     public static function create(): PDODatabase
     {
-        $file = "../Config/db.ini";
+        $file = "Config/db.ini";
         $dbInfo = parse_ini_file($file);
 
         $pdo = new PDO($dbInfo['dsn'],$dbInfo['user'],$dbInfo['pass']);

@@ -20,10 +20,10 @@ class TaskService
     public function create($formData): string
     {
 
-        if (isset($formData['parent_id'])){
+        if (isset($formData['parent_id']) && $formData['parent_id'] !== ""){
             $parent = 'parent_id';
             $parentType = 'parent';
-        }else if (isset($formData['goal_id'])){
+        }else if (isset($formData['goal_id']) && $formData['goal_id'] !== ""){
             $parent = 'goal_id';
             $parentType = 'goal';
         }else{
@@ -45,6 +45,15 @@ class TaskService
 
     }
 
+    public function delete(int $taskId): string
+    {
+        if (null !== $this->taskRepository->getTaskById($taskId)){
+            return "No Such Task In Database!";
+        }
+
+        return $this->taskRepository->delete($taskId);
+    }
+
     /**
      * @param $parentType //parent_id or goal_id
      * @param $parentId
@@ -59,7 +68,7 @@ class TaskService
             http_response_code(201);
             echo json_encode($arr,JSON_PRETTY_PRINT);
         }else {
-            http_response_code(400);
+            http_response_code(403);
             $noData = ["message" => "No Tasks For Goal ID " . $parentId];
             echo json_encode($noData,JSON_PRETTY_PRINT);
         }
@@ -83,6 +92,8 @@ class TaskService
                 "description" => $task->getTaskDescription(),
                 "due_date" => $task->getDueDate(),
                 $parent => $task->$getParentId(),
+                "completed" => $task->getCompleted(),
+                "progress" => $task->getProgress(),
             ];
             array_push($arr,$taskInfo);
         }

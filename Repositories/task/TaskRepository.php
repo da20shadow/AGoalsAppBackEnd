@@ -43,6 +43,40 @@ class TaskRepository
         }
     }
 
+    public function delete(int $taskId): string
+    {
+        try {
+            $this->db->query(
+                "DELETE 
+                        FROM tasks
+                        WHERE task_id = :task_id"
+            )->execute(array(
+                ":task_id" => $taskId
+            ));
+            return "Successfully Deleted!";
+        }catch (PDOException $exception){
+            return "Error " . $exception->getMessage();
+        }
+    }
+
+    public function getTaskById($taskId): ?TaskDTO
+    {
+        try {
+            return $this->db->query("
+         SELECT task_id AS taskId, 
+                     task_title AS taskTitle,
+                     task_description AS taskDescription,
+                     due_date AS dueDate
+                FROM tasks WHERE task_id = :task_id")
+                 ->execute(array(
+                     ":task_id" => $taskId
+                 ))->fetch(TaskDTO::class)
+                 ->current();
+        }catch (PDOException $exception){
+            return null;
+        }
+    }
+
     public function getAll($parentType,$parentId): array|\Generator
     {
         $parent = 'parent_id';

@@ -8,9 +8,11 @@ class TaskDTO
     private string $taskTitle;
     private string $taskDescription;
     private string $dueDate;
+    private int $progress;
+    private int $completed;
     private $parent_id = null;
     private $goal_id = null;
-    private int $user_id = 0;
+    private int $user_id = 1;
 
     public static function create($task_title,$task_description,$due_date,
                                   $user_id): TaskDTO
@@ -59,6 +61,24 @@ class TaskDTO
         $this->dueDate = $dueDate;
         return $this;
     }
+
+    /**
+     * @param int $progress
+     */
+    public function setProgress(int $progress): void
+    {
+        $this->progress = $progress;
+    }
+
+    /**
+     * @param int $completed
+     */
+    public function setCompleted(int $completed): void
+    {
+        $this->completed = $completed;
+    }
+
+
 
     /**
      * @param int $user_id
@@ -117,6 +137,24 @@ class TaskDTO
     {
         return $this->dueDate;
     }
+
+    /**
+     * @return int
+     */
+    public function getProgress(): int
+    {
+        return $this->progress;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCompleted(): int
+    {
+        return $this->completed;
+    }
+
+
 
     /**
      * @return int

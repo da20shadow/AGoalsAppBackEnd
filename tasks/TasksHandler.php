@@ -74,6 +74,27 @@ class TasksHandler
 
             echo json_encode($message);
 
+        }
+        else if (preg_match("/^\/tasks\/delete\/\d+$/", $url)) {
+            //Creates a new task
+            if ($_SERVER['REQUEST_METHOD'] === 'DELETE'){
+                $taskId = str_replace("/tasks/delete/", '', $url);
+                $result = $taskService->delete($taskId);
+
+                if (str_contains($result,'Error')){
+                    http_response_code(400);
+                }else {
+                    http_response_code(201);
+                }
+                $message = ["message" => $result];
+
+            } else {
+                http_response_code(400);
+                $message = ["message" => "An Error occur!"];
+            }
+
+            echo json_encode($message);
+
         } else {
 
             http_response_code(401);
